@@ -1,0 +1,50 @@
+name: Brion Agent
+version: "0.4.0"
+slug: brion_agent
+description: Lebenszyklus, Quarantäne, Aktivierung, VPN und Heartbeat der Brion-Installation
+url: https://git.brion.example/brion/brion-platform
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: services
+boot: auto
+# Host-Netz + NET_ADMIN: WireGuard-Interface auf dem HAOS-Host (erst ab PROVISIONING)
+host_network: true
+privileged:
+  - NET_ADMIN
+homeassistant_api: true
+hassio_api: false
+map:
+  - homeassistant_config:rw
+ingress: true
+ingress_port: 8098
+panel_icon: mdi:shield-home-outline
+panel_title: Brion
+# Secrets dürfen niemals in HA-Backups (und damit nach Nextcloud) gelangen.
+backup_exclude:
+  - "brion/secrets/*"
+  - "brion/wg/*"
+ports:
+  8099/tcp: 8099
+ports_description:
+  8099/tcp: Brion Agent API (Health; /api/* nur mit Token; Werkstatt-API nur im Werkstattmodus)
+watchdog: "http://[HOST]:[PORT:8099]/v1/health"
+options:
+  log_level: info
+  workshop_mode: false
+  workshop_token_sha256: ""
+  activation_url: "https://activate.brion.example/v1/activate"
+  activation_ca_file: ""
+  api_token_sha256: ""
+  activate_after_conditional_acceptance: false
+  handshake_timeout: 60
+schema:
+  log_level: list(debug|info|warning|error)
+  workshop_mode: bool
+  workshop_token_sha256: "match(^([0-9a-f]{64})?$)"
+  activation_url: url
+  activation_ca_file: str
+  api_token_sha256: "match(^([0-9a-f]{64})?$)"
+  activate_after_conditional_acceptance: bool
+  handshake_timeout: int(10,600)

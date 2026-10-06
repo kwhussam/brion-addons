@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brion</title>
+<link rel="stylesheet" href="ui.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Brion</h1>
+    <p class="sub">Installation <span id="iid">–</span> · Zustand <span id="state" class="pill">…</span></p>
+  </header>
+
+  <section class="card" id="banner-card">
+    <p id="message" class="message"></p>
+  </section>
+
+  <section class="card">
+    <h2>Status</h2>
+    <table class="status">
+      <tr><th>Sicherheitsprüfung</th><td id="t-security">…</td></tr>
+      <tr><th>Geprüft am</th><td id="t-security-ts">…</td></tr>
+      <tr><th>Master-Freigabe</th><td id="t-master">…</td></tr>
+      <tr><th>Fernwartung (VPN)</th><td id="t-vpn">…</td></tr>
+      <tr><th>Backup</th><td id="t-backup">…</td></tr>
+      <tr><th>Heartbeat</th><td id="t-heartbeat">…</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="actions-card" hidden>
+    <h2>Aktionen</h2>
+    <div id="actions" class="actions"></div>
+    <label id="reason-wrap" hidden>Begründung<textarea id="reason" maxlength="200" rows="2"></textarea></label>
+    <p id="action-error" class="error" hidden></p>
+    <p id="activation" class="hint" hidden></p>
+  </section>
+
+  <p class="foot">Brion Agent <span id="version"></span> · Der Netzwerkscan erfolgt ausschließlich im Add-on „Brion Security“.</p>
+</main>
+<script src="ui.js"></script>
+</body>
+</html>

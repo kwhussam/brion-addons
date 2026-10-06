@@ -1,0 +1,90 @@
+# Brion Security – Regelwerk
+# Jede Regel bewertet genau einen Aspekt mit GREEN / YELLOW / RED.
+# "check" ist eine fest implementierte Prüfung (brion_security/rules.py, CHECKS),
+# "levels" ordnet jedem möglichen Ergebnis der Prüfung eine Ampelfarbe zu.
+# Alle Ergebnisse einer Prüfung müssen zugeordnet sein (wird beim Laden validiert).
+version: 1
+
+evaluation:
+  # 0 RED und höchstens so viele YELLOW -> PASSED, sonst CONDITIONAL; >=1 RED -> FAILED
+  max_yellow_for_pass: 2
+
+scan:
+  # Gezielte Portprüfung im LAN (keine Vollscans). TCP.
+  ports: [21, 22, 23, 80, 139, 443, 445, 554, 1883, 3389, 5900, 8080, 8123, 8443]
+  max_hosts: 512           # größere Netze werden auf das /24 des Pi begrenzt
+  min_prefix: 22
+
+rules:
+  - id: WIFI_ENCRYPTION
+    title: WLAN-Verschlüsselung
+    check: wifi_security
+    levels:
+      WPA3: GREEN
+      WPA2_WPA3: GREEN
+      WPA2: GREEN
+      WPA_WPA2: YELLOW
+      WPA: RED
+      WEP: RED
+      OPEN: RED
+      DISABLED: GREEN
+      UNKNOWN: YELLOW
+    recommendation: Im Router WPA2 oder WPA3 aktivieren; WEP/offene Netze abschalten.
+
+  - id: UPNP
+    title: UPnP am Router
+    check: upnp_enabled
+    levels: {enabled: YELLOW, disabled: GREEN, unknown: YELLOW}
+    recommendation: UPnP deaktivieren, wenn kein Gerät automatische Portfreigaben benötigt.
+
+  - id: HA_WAN_EXPOSED
+    title: Home Assistant (Port 8123) aus dem Internet erreichbar
+    check: port_forward
+    params: {internal_ports: [8123, 443, 80], to_self: true}
+    levels: {exposed: RED, none: GREEN, unknown: YELLOW}
+    recommendation: Portfreigabe auf den Brion-Pi entfernen. Fernwartung erfolgt ausschließlich über das Brion-VPN.
+
+  - id: ROUTER_ADMIN_WAN
+    title: Router-Oberfläche aus dem Internet erreichbar
+    check: router_remote_access
+    levels: {enabled: RED, disabled: GREEN, unknown: YELLOW}
+    recommendation: Internetzugriff auf die Router-Oberfläche deaktivieren (FRITZ!Box -> Internet -> Freigaben -> FRITZ!Box-Dienste).
+
+  - id: PORT_FORWARDS
+    title: Weitere Portfreigaben ins Heimnetz
+    check: port_forward
+    params: {any: true}
+    levels: {exposed: YELLOW, none: GREEN, unknown: YELLOW}
+    recommendation: Nicht benötigte Portfreigaben im Router entfernen.
+
+  - id: UNKNOWN_DEVICES
+    title: Unbekannte Geräte im Netz
+    check: unknown_devices
+    levels: {found: YELLOW, none: GREEN}
+    recommendation: Unbekannte Geräte mit dem Kunden prüfen und ggf. aus dem Netz entfernen.
+
+  - id: FIRMWARE
+    title: Router-Firmware aktuell
+    check: firmware_update
+    levels: {available: YELLOW, current: GREEN, unknown: YELLOW}
+    recommendation: Verfügbares Firmware-Update des Routers installieren.
+
+  - id: INSECURE_SERVICES
+    title: Unverschlüsselte Dienste (Telnet/FTP) im Netz
+    check: open_ports
+    params: {ports: [21, 23]}
+    levels: {found: YELLOW, none: GREEN}
+    recommendation: Telnet/FTP auf den betroffenen Geräten deaktivieren.
+
+  - id: REMOTE_DESKTOP
+    title: Fernzugriffsdienste (RDP/VNC) im Netz
+    check: open_ports
+    params: {ports: [3389, 5900]}
+    levels: {found: YELLOW, none: GREEN}
+    recommendation: RDP/VNC nur bei Bedarf aktivieren und mit starkem Passwort schützen.
+
+  - id: ROUTER_VERIFIED
+    title: Router-Konfiguration geprüft (TR-064)
+    check: router_verified
+    levels: {verified: GREEN, unverified: YELLOW}
+    recommendation: Prüfung mit Router-Zugangsdaten wiederholen (TR-064 in der FRITZ!Box erlauben).

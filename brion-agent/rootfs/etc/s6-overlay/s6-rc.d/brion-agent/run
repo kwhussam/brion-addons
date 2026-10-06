@@ -1,0 +1,5 @@
+#!/command/with-contenv bashio
+# shellcheck shell=bash
+bashio::log.info "Starting Brion Agent"
+export PYTHONPATH=/opt/brion
+exec python3 -m brion_agent

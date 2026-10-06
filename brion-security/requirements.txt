@@ -1,0 +1,6 @@
+# Getestet mit diesen Versionen (tests/unit/test_security_*.py)
+fastapi==0.142.2
+uvicorn==0.53.0
+Jinja2==3.1.6
+PyYAML==6.0.3
+weasyprint==70.0   # optional: PDF-Layout; ohne WeasyPrint erzeugt der eingebaute Text-PDF-Writer den Bericht

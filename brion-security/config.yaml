@@ -1,0 +1,37 @@
+name: Brion Security
+version: "0.3.1"
+slug: brion_security
+description: Lokale Netzwerk-Sicherheitsprüfung (Quarantäne) der Brion-Installation
+url: https://git.brion.example/brion/brion-platform
+arch:
+  - aarch64
+  - amd64
+init: false
+startup: application
+boot: auto
+# Host-Netz: ARP-Erkennung (MAC-Adressen) und Router-Zugriff im Kunden-LAN.
+host_network: true
+# nmap braucht Raw-Sockets für ARP-Ping und SYN-Scan.
+privileged:
+  - NET_RAW
+ingress: true
+ingress_port: 8100
+panel_icon: mdi:shield-check-outline
+panel_title: Brion Security
+homeassistant_api: false
+hassio_api: true          # nur /network/info (Subnetz, Gateway, DNS) und /addons/self/info
+# Scan-Rohdaten, Ergebnisse und Berichte niemals in HA-/Cloud-Backups
+backup_exclude:
+  - "security/*"
+options:
+  log_level: info
+  bind_host: "172.30.32.1"     # nur die hassio-Schnittstelle (Ingress), nicht das Kunden-LAN
+  agent_url: "http://127.0.0.1:8099"
+  router_host: ""              # leer = Default-Gateway
+  retain_reports: 5
+schema:
+  log_level: list(debug|info|warning|error)
+  bind_host: str
+  agent_url: url
+  router_host: "match(^([0-9A-Za-z.:-]{0,253})$)"
+  retain_reports: int(1,50)

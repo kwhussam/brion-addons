@@ -1,0 +1,32 @@
+:root { --bg:#f4f6f8; --card:#fff; --text:#1d2733; --muted:#5b6773; --line:#e3e8ed; --brand:#0b6e99;
+        --green:#17633a; --green-bg:#e8f5ec; --yellow:#7a5600; --yellow-bg:#fff6dd; --red:#9b1c1c; --red-bg:#fde8e8; }
+@media (prefers-color-scheme: dark) {
+  :root { --bg:#111820; --card:#1a232d; --text:#e6ebf0; --muted:#9aa7b4; --line:#2a3642; --brand:#4fb3e0;
+          --green:#7fd6a0; --green-bg:#173a26; --yellow:#f0cf72; --yellow-bg:#3b3013; --red:#f5a3a3; --red-bg:#4a1d1d; }
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--text); font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif; }
+main { max-width:760px; margin:0 auto; padding:24px 16px 48px; }
+h1 { margin:0; font-size:1.6rem; } h2 { margin:0 0 12px; font-size:1.05rem; }
+.sub { color:var(--muted); margin:4px 0 20px; }
+.pill { display:inline-block; padding:1px 10px; border-radius:999px; background:var(--line); font-weight:600; font-size:.85rem; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:12px; padding:18px 20px; margin-bottom:16px; }
+.message { margin:0; font-weight:600; }
+#banner-card.lock { border-color:var(--red); background:var(--red-bg); color:var(--red); }
+#banner-card.warn { border-color:var(--yellow); background:var(--yellow-bg); color:var(--yellow); }
+#banner-card.ok { border-color:var(--green); background:var(--green-bg); color:var(--green); }
+table.status { width:100%; border-collapse:collapse; }
+table.status th, table.status td { text-align:left; padding:8px 0; border-bottom:1px solid var(--line); }
+table.status tr:last-child th, table.status tr:last-child td { border-bottom:0; }
+table.status th { width:45%; font-weight:500; color:var(--muted); }
+.ok { color:var(--green); font-weight:600; } .warn { color:var(--yellow); font-weight:600; } .bad { color:var(--red); font-weight:600; }
+.actions { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:12px; }
+button, a.button { font:inherit; font-weight:600; padding:10px 14px; border:0; border-radius:8px; background:var(--brand);
+                   color:#fff; cursor:pointer; text-decoration:none; }
+button.secondary { background:var(--line); color:var(--text); }
+button.danger { background:var(--red); }
+button:disabled { opacity:.5; cursor:wait; }
+label { display:grid; gap:4px; font-weight:500; }
+textarea { font:inherit; padding:8px 10px; border:1px solid var(--line); border-radius:8px; background:var(--bg); color:var(--text); }
+.error { color:var(--red); } .hint { color:var(--muted); }
+.foot { color:var(--muted); font-size:.85rem; text-align:center; }

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Brion Sicherheitsprüfung</title>
+<link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+<main>
+  <header>
+    <h1>Brion Sicherheitsprüfung</h1>
+    <p class="sub">Installation <span id="installation">{{ installation_id or '–' }}</span> · Zustand <span id="lifecycle" class="pill">{{ state or 'unbekannt' }}</span></p>
+  </header>
+
+  <section class="card">
+    <h2>Status</h2>
+    <table class="status">
+      <tr><th>Raspberry Pi</th><td id="s-pi">…</td></tr>
+      <tr><th>Netzwerk</th><td id="s-net">…</td></tr>
+      <tr><th>Router</th><td id="s-router">…</td></tr>
+      <tr><th>Security Check</th><td id="s-check">…</td></tr>
+      <tr><th>Remote Wartung</th><td id="s-remote">…</td></tr>
+      <tr><th>Automatisierungen</th><td id="s-auto">…</td></tr>
+    </table>
+  </section>
+
+  <section class="card" id="start-card" hidden>
+    <h2>Prüfung</h2>
+    <p class="hint">Für die Router-Prüfung (FRITZ!Box über TR-064) bitte die Zugangsdaten des Routers eingeben.
+      Ohne Zugangsdaten wird nur das lokale Netz geprüft. Das Passwort wird nur für diese Prüfung im Arbeitsspeicher
+      verwendet und nirgends gespeichert.</p>
+    <form id="start-form" autocomplete="off">
+      <label><span>Router-Benutzer <span class="opt">(optional)</span></span><input id="router-user" name="router_user" maxlength="64" autocomplete="off"></label>
+      <label><span>Router-Passwort <span class="opt">(optional)</span></span><input id="router-password" name="router_password" type="password" maxlength="128" autocomplete="new-password"></label>
+      <button id="start-btn" type="submit">Sicherheitsprüfung starten</button>
+    </form>
+    <p id="start-error" class="error" hidden></p>
+  </section>
+
+  <section class="card" id="progress-card" hidden>
+    <h2>Prüfung läuft</h2>
+    <div class="bar"><div id="bar-fill"></div></div>
+    <p id="phase" class="hint"></p>
+  </section>
+
+  <section class="card" id="result-card" hidden>
+    <h2>Security Check abgeschlossen</h2>
+    <div class="tiles">
+      <div class="tile GREEN"><b id="c-green">0</b>GREEN</div>
+      <div class="tile YELLOW"><b id="c-yellow">0</b>YELLOW</div>
+      <div class="tile RED"><b id="c-red">0</b>RED</div>
+    </div>
+    <p class="overall-line">GESAMTSTATUS: <span id="overall" class="overall"></span></p>
+    <ul id="issues" class="issues"></ul>
+    <p class="links"><a href="result">Ergebnisansicht</a> · <a href="api/report">Bericht (PDF)</a></p>
+  </section>
+
+  <p class="privacy">Scan-Ergebnisse bleiben auf diesem Gerät. Brion erhält ausschließlich Installations-ID, Status und Zeitpunkt.</p>
+</main>
+<script src="static/app.js"></script>
+</body>
+</html>

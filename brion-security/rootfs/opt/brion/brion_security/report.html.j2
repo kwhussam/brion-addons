@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Brion Security-Protokoll {{ r.installation_id or '' }}</title>
+<style>
+  @page { size: A4; margin: 18mm 16mm; @bottom-center { content: "Brion Security-Protokoll · lokal, vertraulich · Seite " counter(page) "/" counter(pages); font-size: 8pt; color: #666; } }
+  body { font-family: "DejaVu Sans", system-ui, sans-serif; color: #1d2733; font-size: 10pt; line-height: 1.45; margin: 0; }
+  h1 { font-size: 18pt; margin: 0 0 4pt; } h2 { font-size: 12pt; margin: 18pt 0 6pt; border-bottom: 1px solid #d7dde3; padding-bottom: 3pt; }
+  .meta { color: #5b6773; font-size: 8.5pt; }
+  .summary { display: flex; gap: 10pt; margin: 12pt 0; }
+  .tile { border-radius: 6pt; padding: 8pt 12pt; min-width: 70pt; text-align: center; border: 1px solid #d7dde3; }
+  .tile b { display: block; font-size: 18pt; }
+  .GREEN { background: #e8f5ec; color: #17633a; } .YELLOW { background: #fff6dd; color: #7a5600; } .RED { background: #fde8e8; color: #9b1c1c; }
+  .overall { font-size: 14pt; font-weight: 700; padding: 8pt 12pt; border-radius: 6pt; display: inline-block; }
+  .PASSED { background: #e8f5ec; color: #17633a; } .CONDITIONAL { background: #fff6dd; color: #7a5600; } .FAILED { background: #fde8e8; color: #9b1c1c; }
+  table { width: 100%; border-collapse: collapse; font-size: 8.5pt; } th, td { text-align: left; padding: 4pt 5pt; border-bottom: 1px solid #e6eaee; vertical-align: top; }
+  th { color: #5b6773; font-weight: 600; } .lvl { font-weight: 700; border-radius: 3pt; padding: 1pt 5pt; white-space: nowrap; }
+  .note { margin-top: 18pt; font-size: 8pt; color: #5b6773; }
+  {% if view %} body { max-width: 900px; margin: 24px auto; padding: 0 16px; } .back { font-size: 10pt; } {% endif %}
+</style>
+</head>
+<body>
+{% if view %}<p class="back"><a href="./">← zurück</a> · <a href="api/report">PDF herunterladen</a></p>{% endif %}
+<h1>Brion Sicherheitsprüfung</h1>
+<div class="meta">Installation {{ r.installation_id or '–' }} · Prüfung {{ r.scan_id }} · {{ r.started_at }} – {{ r.finished_at }} · Regelwerk v{{ r.rules_version }} · Scanner {{ r.scanner_version }}</div>
+
+<h2>Security Check abgeschlossen</h2>
+<div class="summary">
+  <div class="tile GREEN"><b>{{ r.counts.GREEN }}</b>GREEN</div>
+  <div class="tile YELLOW"><b>{{ r.counts.YELLOW }}</b>YELLOW</div>
+  <div class="tile RED"><b>{{ r.counts.RED }}</b>RED</div>
+</div>
+<p>GESAMTSTATUS: <span class="overall {{ r.overall }}">{{ r.overall }}</span></p>
+<p class="meta">Bewertung: 0 RED und höchstens {{ r.max_yellow_for_pass }} YELLOW = PASSED · 0 RED und mehr YELLOW = CONDITIONAL · mindestens 1 RED = FAILED</p>
+
+<h2>Prüfpunkte</h2>
+<table>
+  <tr><th>Bewertung</th><th>Prüfpunkt</th><th>Ergebnis</th><th>Empfehlung</th></tr>
+  {% for f in r.findings %}
+  <tr><td><span class="lvl {{ f.level }}">{{ f.level }}</span></td><td>{{ f.title }}</td><td>{{ f.detail }}</td><td>{{ f.recommendation }}</td></tr>
+  {% endfor %}
+</table>
+
+<h2>Netzwerk</h2>
+<table>
+  <tr><th>Subnetz</th><td>{{ r.network.network }}{% if r.network.note %} ({{ r.network.note }}){% endif %}</td></tr>
+  <tr><th>Default Gateway</th><td>{{ r.network.gateway or '–' }}</td></tr>
+  <tr><th>DNS</th><td>{{ (r.network.dns or []) | join(', ') or '–' }}</td></tr>
+  <tr><th>Brion-Pi</th><td>{{ r.network.address }} ({{ r.network.interface }})</td></tr>
+  <tr><th>Router</th><td>{{ r.router.model or 'nicht erkannt' }}{% if r.router.firmware %} · Firmware {{ r.router.firmware }}{% endif %}{% if not r.router.authenticated %} · nicht mit Zugangsdaten geprüft{% endif %}</td></tr>
+</table>
+
+<h2>Geräte im Netz ({{ r.devices | length }})</h2>
+<table>
+  <tr><th>IP</th><th>MAC</th><th>Hersteller</th><th>Name</th><th>Offene Ports (geprüft)</th><th>Router bekannt</th></tr>
+  {% for d in r.devices %}
+  <tr><td>{{ d.ip }}{% if d.is_self %} (Brion){% elif d.is_gateway %} (Router){% endif %}</td><td>{{ d.mac or '–' }}</td><td>{{ d.vendor or '–' }}</td>
+      <td>{{ d.hostname or '–' }}</td><td>{{ (d.open_ports or []) | join(', ') or '–' }}</td>
+      <td>{{ '–' if d.known_to_router is none else ('ja' if d.known_to_router else 'nein') }}</td></tr>
+  {% endfor %}
+</table>
+
+<p class="note">Dieses Protokoll verbleibt ausschließlich auf diesem Gerät und ist von Home-Assistant- und Cloud-Backups
+ausgeschlossen. Brion erhält nur Installations-ID, Gesamtstatus und Zeitpunkt. Das Router-Passwort wurde nur für diese Prüfung im
+Arbeitsspeicher verwendet und nicht gespeichert.</p>
+</body>
+</html>

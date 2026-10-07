@@ -21,6 +21,7 @@ class Settings:
     sys_net: Path
     publish_interval: float
     supervisor_url: str = "http://supervisor"
+    cpuinfo_file: Path = Path("/proc/cpuinfo")
     ingress_host: str = "172.30.32.1"
     ingress_port: int = 8098
     ingress_peers: frozenset = frozenset({"172.30.32.2"})
@@ -88,6 +89,7 @@ def load() -> Settings:
         sys_net=Path(env.get("BRION_SYS_NET", "/sys/class/net")),
         publish_interval=float(env.get("BRION_PUBLISH_INTERVAL", "30")),
         supervisor_url=env.get("BRION_SUPERVISOR_URL", "http://supervisor"),
+        cpuinfo_file=Path(env.get("BRION_CPUINFO_FILE", "/proc/cpuinfo")),
         ingress_host=env.get("BRION_INGRESS_HOST", "172.30.32.1"),
         ingress_port=int(env.get("BRION_INGRESS_PORT", "8098")),
         ingress_peers=frozenset(p for p in env.get("BRION_INGRESS_PEERS", "172.30.32.2").split(",") if p),

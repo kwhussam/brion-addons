@@ -92,9 +92,30 @@ def collect(settings: Settings, ha: HAClient) -> Tuple[SecurityFacts, Dict[str, 
     return facts, inspection
 
 
+_SERIAL_RE = re.compile(r"^[0-9a-f]{8,32}$")
+_CPUINFO_SERIAL_RE = re.compile(r"^Serial\s*:\s*([0-9A-Fa-f]+)\s*$", re.M)
+
+
+def _valid_serial(raw: str) -> Optional[str]:
+    raw = raw.strip("\x00\n ").lower()
+    return raw if _SERIAL_RE.match(raw) and raw.strip("0") else None
+
+
 def hardware_serial(settings: Settings) -> Optional[str]:
+    """Raspberry-Pi serial number.
+
+    1. Device tree (/proc/device-tree/serial-number) - in HAOS add-on containers usually
+       not visible, because Docker masks /sys/firmware.
+    2. /proc/cpuinfo "Serial : 10000000xxxxxxxx" - readable inside the container on a Pi.
+    """
     try:
-        raw = settings.device_serial_file.read_bytes().decode(errors="replace").strip("\x00\n ")
+        serial = _valid_serial(settings.device_serial_file.read_bytes().decode(errors="replace"))
+        if serial:
+            return serial
+    except OSError:
+        pass
+    try:
+        m = _CPUINFO_SERIAL_RE.search(settings.cpuinfo_file.read_text(errors="replace"))
     except OSError:
         return None
-    return raw.lower() or None
+    return _valid_serial(m.group(1)) if m else None

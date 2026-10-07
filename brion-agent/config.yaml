@@ -1,5 +1,5 @@
 name: Brion Agent
-version: "0.4.0"
+version: "0.4.1"
 slug: brion_agent
 description: Lebenszyklus, Quarantäne, Aktivierung, VPN und Heartbeat der Brion-Installation
 url: https://git.brion.example/brion/brion-platform

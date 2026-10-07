@@ -139,6 +139,7 @@ class Agent:
             "icon": "mdi:shield-home-outline",
             "installation_id": rec.get("installation_id"),
             "serial_number": rec.get("serial_number"),
+            "hardware_serial": facts_mod.hardware_serial(self.settings),
             "security_status": rec.get("security_status"),
             "master_enable_expected": rec.get("master_enable_expected", False),
             "vpn_provisioned": rec.get("vpn_provisioned", False),
